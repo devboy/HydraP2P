@@ -29,6 +29,7 @@ package org.devboy.toolkit.net.p2p
     import flash.events.NetStatusEvent;
     import flash.net.GroupSpecifier;
     import flash.net.NetConnection;
+    import flash.net.NetGroup;
     import flash.net.NetGroupReplicationStrategy;
     import flash.utils.ByteArray;
 
@@ -37,66 +38,104 @@ package org.devboy.toolkit.net.p2p
         private var _netConnection : NetConnection;
         private var _user : P2PUser;
         private var _filename : String;
-        private var _p2psharedObject : P2PSharedObject;
-        private var _complete : Boolean;
+        private var _fileSize : uint;
+        private var _chunkSize : uint;
+        private var _p2pSharedFile : P2PSharedFile;
+        private var _receiveChunks : Boolean;
+        private var _sendChunks : Boolean;
+        private var _trafficTracker : P2PFileChannelTrafficTracker;
 
-        public function P2PFileChannel(netConnection : NetConnection, p2pUser : P2PUser, channelGroupID : String, fileName : String, localFile : P2PSharedObject = null)
+        public function P2PFileChannel(netConnection : NetConnection, p2pUser : P2PUser, channelGroupID : String, fileName : String, fileSize : uint, localFile : P2PSharedFile = null,
+                                       chunkSize : uint = 64000, receiveChunks : Boolean = true, sendChunks : Boolean = true )
         {
             super(channelGroupID);
             _netConnection = netConnection;
             _user = p2pUser;
-            _p2psharedObject = localFile;
+            _p2pSharedFile = localFile;
             _filename = fileName;
+            _fileSize = fileSize;
+            _chunkSize = chunkSize;
+            _receiveChunks = receiveChunks;
+            _sendChunks = sendChunks;
             init();
         }
 
-        public function get progressString() : String
-        {
-            if (_complete)
-                return "100%";
-            else if (!_p2psharedObject)
-                return "0%";
-            else
-                return ((_p2psharedObject.actualFetchIndex / _p2psharedObject.packetLenght) * 100).toString() + "%";
-        }
+//        public function get progressString() : String
+//        {
+//            if (_complete)
+//                return "100%";
+//            else if (!_p2psharedObject)
+//                return "0%";
+//            else
+//                return ((_p2psharedObject.actualFetchIndex / _p2psharedObject.packetLenght) * 100).toString() + "%";
+//        }
 
         private function init() : void
         {
+            _trafficTracker = new P2PFileChannelTrafficTracker();
             var groupSpecifier : GroupSpecifier = new GroupSpecifier(groupID);
             groupSpecifier.serverChannelEnabled = true;
             groupSpecifier.objectReplicationEnabled = true;
             connect(_netConnection, groupSpecifier, true);
-            addEventListener(Event.CONNECT, groupConnected);
+            addEventListener(P2PChannelEvent.CONNECT_SUCCESS, groupConnected);
         }
 
         public function get fileData() : ByteArray
         {
-            return _p2psharedObject.data;
+            SharedFileExample.PRINTER.println("P2PFileChannel->fileDataComplete", _p2pSharedFile.dataComplete );
+            if( _p2pSharedFile.dataComplete )
+                return _p2pSharedFile.fileData;
+            else
+                return null;
         }
 
-        public function get fileUploader() : String
+        public function get fileOwner() : String
         {
             return _user.userName;
         }
 
         private function groupConnected(e : Event) : void
         {
-            removeEventListener(Event.CONNECT, groupConnected);
+            removeEventListener(P2PChannelEvent.CONNECT_SUCCESS, groupConnected);
             netGroup.replicationStrategy = NetGroupReplicationStrategy.LOWEST_FIRST;
-            if (!_p2psharedObject)
+            if (!_p2pSharedFile)
             {
-                //Output.output("P2PFileChannel->groupConnected->!_p2psharedObject");
-                _complete = false;
-                _p2psharedObject = new P2PSharedObject();
-                _p2psharedObject.filename = _filename;
-                _p2psharedObject.chunks = new Object();
-                receiveObject(0);
+                _p2pSharedFile = new P2PSharedFile();
+                _p2pSharedFile.initializeEmptyFile(_filename,_fileSize,_chunkSize);
+                if( _receiveChunks )
+                     updateWantObjects();
             }
             else
+                if( _sendChunks )
+                    updateHaveObjects();
+        }
+
+        private function updateWantObjects() : void
+        {
+            var chunkIndex : uint;
+            var i : int = 0;
+            const l : int = _p2pSharedFile.numChunks;
+            for ( ; i < l; ++i )
             {
-                //Output.output("P2PFileChannel->groupConnected->_p2psharedObject->complete=true");
-                _complete = true;
-                netGroup.addHaveObjects(0, _p2psharedObject.packetLenght);
+                if(!_p2pSharedFile.containsChunk(i))
+                {
+                    netGroup.addWantObjects(i,i);
+                    SharedFileExample.PRINTER.println("P2PFileChannel->updateWantObjects",i);
+                }
+            }
+        }
+
+        private function updateHaveObjects() : void
+        {
+            var i : int = 0;
+            const l : int = _p2pSharedFile.numChunks;
+            for ( ; i < l; ++i )
+            {
+                if( _p2pSharedFile.containsChunk(i) )
+                {
+                    netGroup.addHaveObjects(i, i);
+                    SharedFileExample.PRINTER.println("P2PFileChannel->updateHaveObjects",i);
+                }
             }
         }
 
@@ -105,47 +144,21 @@ package org.devboy.toolkit.net.p2p
             switch (e.info.code)
             {
                 case NetStatusCodes.NETGROUP_REPLICATION_FETCH_SENDNOTIFY:
+                case NetStatusCodes.NETGROUP_REPLICATION_FETCH_FAILED:
                     break;
-                case "NetGroup.Replication.Fetch.Failed":
-                    break;
-                case "NetGroup.Replication.Fetch.Result":
-                    netGroup.addHaveObjects(e.info.index, e.info.index);
-                    _p2psharedObject.chunks[e.info.index] = e.info.object;
-
-                    if (e.info.index == 0) {
-                        _p2psharedObject.packetLenght = Number(e.info.object);
-                        //writeText("_p2psharedObject.packetLenght: "+_p2psharedObject.packetLenght);
-
-                        receiveObject(1);
-
-                    } else {
-                        if (e.info.index + 1 < _p2psharedObject.packetLenght) {
-                            receiveObject(e.info.index + 1);
-                        } else {
-                            //writeText("Receiving DONE");
-                            //writeText("_p2psharedObject.packetLenght: "+_p2psharedObject.packetLenght);
-
-                            _p2psharedObject.data = new ByteArray();
-                            for (var i : int = 1; i < _p2psharedObject.packetLenght; i++) {
-                                _p2psharedObject.data.writeBytes(_p2psharedObject.chunks[i]);
-                            }
-
-                            //writeText("_p2psharedObject.data.bytesAvailable: "+_p2psharedObject.data.bytesAvailable);
-                            //writeText("_p2psharedObject.data.length: "+_p2psharedObject.data.length);
-                            _complete = true;
-                        }
-                    }
-
+                case NetStatusCodes.NETGROUP_REPLICATION_FETCH_RESULT:
+                    _p2pSharedFile.writeChunk(e.info.object,e.info.index);
+                    _trafficTracker.addReceivedChunk(_chunkSize);
                     dispatchEvent(new P2PFileChannelEvent(P2PFileChannelEvent.RECEIVE_DATA));
-                    if (_complete)
-                        dispatchEvent(new Event(Event.COMPLETE));
+                    if( _sendChunks )
+                        updateHaveObjects();
+                    SharedFileExample.PRINTER.println("P2PFileChannel->netStatus",_p2pSharedFile.dataComplete);
+                    if(_p2pSharedFile.dataComplete)
+                        dispatchEvent(new P2PFileChannelEvent(P2PFileChannelEvent.FILEDATA_COMPLETE));
                     break;
-
-                case "NetGroup.Replication.Request": // e.info.index, e.info.requestID
-                    netGroup.writeRequestedObject(e.info.requestID, _p2psharedObject.chunks[e.info.index])
-                    //
-
-                    //writeText("____ ID: "+e.info.requestID+", index: "+e.info.index);
+                case NetStatusCodes.NETGROUP_REPLICATION_FETCH_REQUEST:
+                    netGroup.writeRequestedObject(e.info.requestID, _p2pSharedFile.readChunk(e.info.index));
+                    _trafficTracker.addSentChunk(_chunkSize);
                     dispatchEvent(new P2PFileChannelEvent(P2PFileChannelEvent.SEND_DATA));
                     break;
 
@@ -154,14 +167,9 @@ package org.devboy.toolkit.net.p2p
             }
         }
 
-        private function receiveObject(index : Number) : void {
-            netGroup.addWantObjects(index, index);
-            _p2psharedObject.actualFetchIndex = index;
-        }
-
         public function get complete() : Boolean
         {
-            return _complete;
+            return _p2pSharedFile.dataComplete;
         }
 
         public function get filename() : String
@@ -169,6 +177,46 @@ package org.devboy.toolkit.net.p2p
             return _filename;
         }
 
+        public function get receiveChunks() : Boolean {
+            return _receiveChunks;
+        }
 
+        public function set receiveChunks(value : Boolean) : void {
+            _receiveChunks = value;
+            if(_receiveChunks)
+                updateWantObjects();
+        }
+
+        public function get sendChunks() : Boolean {
+            return _sendChunks;
+        }
+
+        public function set sendChunks(value : Boolean) : void {
+            _sendChunks = value;
+            if(_sendChunks)
+                updateHaveObjects();
+        }
+
+        public function get trafficTracker() : P2PFileChannelTrafficTracker {
+            return _trafficTracker;
+        }
+
+        public function get numChunksAvailable() : uint
+        {
+            return _p2pSharedFile.numChunksAvailable;
+        }
+
+        public function get numChunks() : uint
+        {
+            return _p2pSharedFile.numChunks;
+        }
+
+        public function get fileSize() : uint {
+            return _fileSize;
+        }
+
+        public function get chunkSize() : uint {
+            return _chunkSize;
+        }
     }
 }

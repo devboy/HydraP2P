@@ -30,7 +30,8 @@ package org.devboy.toolkit.net.p2p {
         public static const RECEIVE_COMMAND : String = "RECEIVE_COMMAND";
         private var _command : P2PCommand;
 
-        public function P2PCommandEvent(type : String, command : P2PCommand) {
+        public function P2PCommandEvent(type : String, command : P2PCommand )
+        {
             _command = command;
             super(type);
         }

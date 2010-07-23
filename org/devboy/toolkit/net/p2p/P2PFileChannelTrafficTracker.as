@@ -23,19 +23,48 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.devboy.toolkit.net.p2p
-{
-    import flash.events.Event;
+package org.devboy.toolkit.net.p2p {
+    public class P2PFileChannelTrafficTracker {
 
-    public class P2PFileChannelEvent extends Event
-    {
-        public static const RECEIVE_DATA : String = "RECEIVE_DATA";
-        public static const SEND_DATA : String = "SEND_DATA";
-        public static const FILEDATA_COMPLETE : String = "FILEDATA_COMPLETE";
+        private var _bytesReceived : uint;
+        private var _bytesSent : uint;
+        private var _chunksReceived : uint;
+        private var _chunksSent : uint;
 
-        public function P2PFileChannelEvent(type : String, bubbles : Boolean = false, cancelable : Boolean = false)
+        public function P2PFileChannelTrafficTracker()
         {
-            super(type, bubbles, cancelable);
+            _bytesSent = 0;
+            _bytesReceived = 0;
+            _chunksReceived = 0;
+            _chunksSent = 0;
+        }
+
+        public function addReceivedChunk( chunkSize : uint ) : void
+        {
+            _chunksReceived++;
+            _bytesReceived+=chunkSize;
+        }
+        
+        public function addSentChunk( chunkSize : uint ) : void
+        {
+            _chunksSent++;
+            _bytesSent+=chunkSize;
+        }
+
+        public function get bytesReceived() : uint {
+            return _bytesReceived;
+        }
+
+        public function get bytesSent() : uint {
+            return _bytesSent;
+        }
+
+        public function get chunksReceived() : uint {
+            return _chunksReceived;
+        }
+
+        public function get chunksSent() : uint {
+            return _chunksSent;
         }
     }
 }

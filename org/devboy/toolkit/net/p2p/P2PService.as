@@ -53,13 +53,19 @@ package org.devboy.toolkit.net.p2p {
 
         private function netStatus(e : NetStatusEvent) : void
         {
-            ////Output.output("P2PService->netStatus: "+e.info.code);
-            //for ( var val : String in e.info )
-            ////Output.output("P2PService->netStatus->e.info."+val+"  = " + e.info[val]);
             switch (e.info.code)
             {
                 case NetStatusCodes.NETCONNECTION_CONNECT_SUCCESS:
-                    dispatchEvent(new Event(Event.CONNECT));
+                    dispatchEvent(new P2PServiceEvent(P2PServiceEvent.CONNECTED));
+                    break;
+                case NetStatusCodes.NETCONNECTION_CONNECT_CLOSED:
+                    dispatchEvent(new P2PServiceEvent(P2PServiceEvent.CONNECTION_CLOSED));
+                    break;
+                case NetStatusCodes.NETCONNECTION_CONNECT_FAILED:
+                    dispatchEvent(new P2PServiceEvent(P2PServiceEvent.CONNECTION_FAILED));
+                    break;
+                case NetStatusCodes.NETCONNECTION_CONNECT_REJECTED:
+                    dispatchEvent(new P2PServiceEvent(P2PServiceEvent.CONNECTION_REJECTED));
                     break;
             }
         }

@@ -30,8 +30,6 @@ package org.devboy.toolkit.net.p2p
     import flash.net.NetConnection;
     import flash.utils.getTimer;
 
-    //    import data.Output;
-
     public class P2PChatChannel extends P2PChannel
     {
         private var _netConnection : NetConnection;
@@ -65,13 +63,11 @@ package org.devboy.toolkit.net.p2p
 
         private function receiveMessage(message : P2PChatMessage) : void
         {
-            //Output.output("P2PChatChannel->receiveMessage");
             dispatchEvent(new P2PChatEvent(P2PChatEvent.RECEIVE_MESSAGE, message));
         }
 
         public function postMessage(message : String) : void
         {
-            //Output.output("P2PChatChannel->postMessage");
             var msg : P2PChatMessage = new P2PChatMessage(_user.userName, netGroup.convertPeerIDToGroupAddress(_netConnection.nearID), message, getTimer());
             netGroup.post(msg.createObject());
             dispatchEvent(new P2PChatEvent(P2PChatEvent.SENT_MESSAGE, msg));

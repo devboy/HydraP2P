@@ -27,11 +27,15 @@ package org.devboy.toolkit.net.p2p
 {
     //	import data.Output;
 
+    import flash.events.Event;
+    import flash.events.EventDispatcher;
+    import flash.events.IEventDispatcher;
     import flash.utils.Dictionary;
 
-    public class P2PNeighborTracker
+    public class P2PNeighborTracker implements IEventDispatcher
     {
         private var _neighbours : Dictionary;
+        private var _eventDispatcher : IEventDispatcher;
 
         public function P2PNeighborTracker()
         {
@@ -40,19 +44,29 @@ package org.devboy.toolkit.net.p2p
 
         private function init() : void
         {
+            _eventDispatcher = new EventDispatcher(this);
             _neighbours = new Dictionary();
         }
 
         public function addUser(username : String, neighbour : P2PNeighbor) : void
         {
             ////Output.output("P2PNeighborTracker->addUser: " + username );
+            var newUser : Boolean = false;
+            if( !_neighbours.hasOwnProperty(username))
+                newUser = true;
             _neighbours[username] = neighbour;
+            if(newUser)
+                dispatchEvent( new P2PUserEvent(P2PUserEvent.USER_CONNECT, new P2PUser(username,neighbour)) );
         }
 
         public function removeUser(username : String) : void
         {
             if (containsUser(username))
+            {
+                var neighborID : P2PNeighbor = _neighbours[username];
                 delete _neighbours[username];
+                dispatchEvent( new P2PUserEvent(P2PUserEvent.USER_DISCONNECT,new P2PUser(username,neighborID)) );
+            }
         }
 
         public function containsUser(username : String) : Boolean
@@ -60,9 +74,10 @@ package org.devboy.toolkit.net.p2p
             return _neighbours.hasOwnProperty(username);
         }
 
-        public function getUser(username : String) : P2PNeighbor
+        public function getUser(username : String) : P2PUser
         {
-            return _neighbours[username];
+            var neighborID : P2PNeighbor = _neighbours[username];
+            return new P2PUser(username,neighborID);
         }
 
         public function containsPeerID(peerID : String) : Boolean
@@ -110,6 +125,31 @@ package org.devboy.toolkit.net.p2p
             for (username in _neighbours)
                 peerIDs.push((_neighbours[username] as P2PNeighbor).peerID);
             return peerIDs;
+        }
+
+        public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
+        {
+            _eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+        }
+
+        public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
+        {
+            _eventDispatcher.removeEventListener(type, listener, useCapture);
+        }
+
+        public function dispatchEvent(event : Event) : Boolean
+        {
+            return _eventDispatcher.dispatchEvent(event);
+        }
+
+        public function hasEventListener(type : String) : Boolean
+        {
+            return _eventDispatcher.hasEventListener(type);
+        }
+
+        public function willTrigger(type : String) : Boolean
+        {
+            return _eventDispatcher.willTrigger(type);
         }
 
     }

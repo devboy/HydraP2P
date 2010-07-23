@@ -23,19 +23,18 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.devboy.toolkit.net.p2p
-{
-    import flash.events.Event;
+package org.devboy.toolkit.net.p2p.unittests {
+    import asunit.framework.TestSuite;
 
-    public class P2PFileChannelEvent extends Event
-    {
-        public static const RECEIVE_DATA : String = "RECEIVE_DATA";
-        public static const SEND_DATA : String = "SEND_DATA";
-        public static const FILEDATA_COMPLETE : String = "FILEDATA_COMPLETE";
+    public class P2PLibTestSuite extends TestSuite {
+        public function P2PLibTestSuite() {
+            super();
+            init();
+        }
 
-        public function P2PFileChannelEvent(type : String, bubbles : Boolean = false, cancelable : Boolean = false)
+        private function init() : void
         {
-            super(type, bubbles, cancelable);
+            addTest(new P2PSharedFileTest() );
         }
     }
 }

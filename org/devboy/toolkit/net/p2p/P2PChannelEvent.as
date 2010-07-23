@@ -23,19 +23,21 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.devboy.toolkit.net.p2p
-{
+package org.devboy.toolkit.net.p2p {
     import flash.events.Event;
 
-    public class P2PFileChannelEvent extends Event
-    {
-        public static const RECEIVE_DATA : String = "RECEIVE_DATA";
-        public static const SEND_DATA : String = "SEND_DATA";
-        public static const FILEDATA_COMPLETE : String = "FILEDATA_COMPLETE";
+    public class P2PChannelEvent extends Event {
 
-        public function P2PFileChannelEvent(type : String, bubbles : Boolean = false, cancelable : Boolean = false)
-        {
-            super(type, bubbles, cancelable);
+        public static const CONNECT_SUCCESS : String = "CONNECT_SUCCESS";
+        public static const CONNECT_REJECTED : String = "CONNECT_REJECTED";
+        public static const CONNECT_FAILED : String = "CONNECT_FAILED";
+
+        public function P2PChannelEvent(type:String) {
+            super(type);
+        }
+
+        override public function clone() : Event {
+            return new P2PChannelEvent(type);
         }
     }
 }

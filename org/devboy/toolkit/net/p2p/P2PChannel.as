@@ -24,8 +24,6 @@
  */
 
 package org.devboy.toolkit.net.p2p {
-    // import data.Output;
-
     import flash.events.Event;
     import flash.events.EventDispatcher;
     import flash.events.IEventDispatcher;
@@ -55,7 +53,6 @@ package org.devboy.toolkit.net.p2p {
 
         public function connect(netConnection : NetConnection, specifier : GroupSpecifier, withAuthorization : Boolean) : void
         {
-            // //Output.output("P2PChannel->connect");
             netConnection.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
             _netGroup = new NetGroup(netConnection, withAuthorization ? specifier.groupspecWithAuthorizations() : specifier.groupspecWithoutAuthorizations());
             _netGroup.addEventListener(NetStatusEvent.NET_STATUS, netStatus);
@@ -73,17 +70,22 @@ package org.devboy.toolkit.net.p2p {
 
         protected function netStatus(e : NetStatusEvent) : void
         {
-            //            //Output.output("P2PChannel->netStatus: "+e.info.code);
-            //			for ( var val : String in e.info )
-            //				if( val != "object" )
-            //				//Output.output("P2PChannel->netStatus->e.info."+val+" = " + e.info[val]);
             switch (e.info.code)
             {
                 case NetStatusCodes.NETGROUP_CONNECT_SUCCESS:
+                case NetStatusCodes.NETGROUP_CONNECT_REJECTED:
+                case NetStatusCodes.NETGROUP_CONNECT_FAILED:
                     if (e.info.group && e.info.group == _netGroup)
                     {
-                        _connected = true;
-                        dispatchEvent(new Event(Event.CONNECT));
+                        _connected = e.info.code == NetStatusCodes.NETGROUP_CONNECT_SUCCESS;
+                        var eventType : String;
+                        if( e.info.code == NetStatusCodes.NETGROUP_CONNECT_SUCCESS )
+                            eventType = P2PChannelEvent.CONNECT_SUCCESS;
+                        else if( e.info.code == NetStatusCodes.NETGROUP_CONNECT_REJECTED )
+                            eventType = P2PChannelEvent.CONNECT_REJECTED;
+                        else if( e.info.code == NetStatusCodes.NETGROUP_CONNECT_FAILED )
+                            eventType = P2PChannelEvent.CONNECT_FAILED;
+                        dispatchEvent(new P2PChannelEvent(eventType));
                     }
                     break;
                 case NetStatusCodes.NETGROUP_NEIGHBOUR_CONNECT:

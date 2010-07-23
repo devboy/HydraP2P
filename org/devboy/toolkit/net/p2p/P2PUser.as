@@ -28,10 +28,20 @@ package org.devboy.toolkit.net.p2p
     public class P2PUser
     {
         private var _userName : String;
+        private var _neighborID : P2PNeighbor;
 
-        public function P2PUser(userName : String)
+        public function get neighborID() : P2PNeighbor {
+            return _neighborID;
+        }
+
+        public function set neighborID(value : P2PNeighbor) : void {
+            _neighborID = value;
+        }
+
+        public function P2PUser(userName : String, neighborID : P2PNeighbor = null)
         {
             _userName = userName;
+            _neighborID =neighborID;
         }
 
         public function get userName() : String {

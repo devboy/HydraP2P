@@ -23,19 +23,17 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.devboy.toolkit.net.p2p
-{
+package org.devboy.toolkit.filesystem {
     import flash.events.Event;
 
-    public class P2PFileChannelEvent extends Event
-    {
-        public static const RECEIVE_DATA : String = "RECEIVE_DATA";
-        public static const SEND_DATA : String = "SEND_DATA";
+    public class LocalFileLoaderEvent extends Event {
+        
         public static const FILEDATA_COMPLETE : String = "FILEDATA_COMPLETE";
-
-        public function P2PFileChannelEvent(type : String, bubbles : Boolean = false, cancelable : Boolean = false)
-        {
-            super(type, bubbles, cancelable);
+        public static const FILEDATA_ERROR : String = "FILEDATA_ERROR";
+                
+        
+        public function LocalFileLoaderEvent(type:String) {
+            super(type);
         }
     }
 }
