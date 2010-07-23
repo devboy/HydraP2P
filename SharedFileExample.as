@@ -54,7 +54,7 @@ package {
     [SWF(width='800', height='600')]
     public class SharedFileExample extends Sprite {
 
-        private static const SERVICE_URL : String = "rtmfp://stratus.rtmfp.net/4922a6e8577d8ef3933850ca-728179830de4";
+        private static const SERVICE_URL : String = "rtmfp://stratus.rtmfp.net/YOUR_KEY";
         private var _printer : ResultPrinter;
         private var _p2pService : P2PService;
         private var _p2pCommandChannel : P2PCommandChannel;
