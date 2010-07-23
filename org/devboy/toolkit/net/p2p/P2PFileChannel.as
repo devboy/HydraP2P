@@ -103,14 +103,14 @@ package org.devboy.toolkit.net.p2p
                 _p2pSharedFile = new P2PSharedFile();
                 _p2pSharedFile.initializeEmptyFile(_filename,_fileSize,_chunkSize);
                 if( _receiveChunks )
-                     updateWantObjects();
+                     initWantObjects();
             }
             else
                 if( _sendChunks )
-                    updateHaveObjects();
+                    initHaveObjects();
         }
 
-        private function updateWantObjects() : void
+        private function initWantObjects() : void
         {
             var chunkIndex : uint;
             var i : int = 0;
@@ -125,7 +125,7 @@ package org.devboy.toolkit.net.p2p
             }
         }
 
-        private function updateHaveObjects() : void
+        private function initHaveObjects() : void
         {
             var i : int = 0;
             const l : int = _p2pSharedFile.numChunks;
@@ -137,6 +137,11 @@ package org.devboy.toolkit.net.p2p
                     SharedFileExample.PRINTER.println("P2PFileChannel->updateHaveObjects",i);
                 }
             }
+        }
+
+        private function updateHaveObject( chunkIndex : uint ) : void
+        {
+            netGroup.addHaveObjects(chunkIndex,chunkIndex);
         }
 
         override protected function netStatus(e : NetStatusEvent) : void {
@@ -151,7 +156,7 @@ package org.devboy.toolkit.net.p2p
                     _trafficTracker.addReceivedChunk(_chunkSize);
                     dispatchEvent(new P2PFileChannelEvent(P2PFileChannelEvent.RECEIVE_DATA));
                     if( _sendChunks )
-                        updateHaveObjects();
+                        updateHaveObject(e.info.index);
                     SharedFileExample.PRINTER.println("P2PFileChannel->netStatus",_p2pSharedFile.dataComplete);
                     if(_p2pSharedFile.dataComplete)
                         dispatchEvent(new P2PFileChannelEvent(P2PFileChannelEvent.FILEDATA_COMPLETE));
@@ -184,7 +189,7 @@ package org.devboy.toolkit.net.p2p
         public function set receiveChunks(value : Boolean) : void {
             _receiveChunks = value;
             if(_receiveChunks)
-                updateWantObjects();
+                initWantObjects();
         }
 
         public function get sendChunks() : Boolean {
@@ -194,7 +199,7 @@ package org.devboy.toolkit.net.p2p
         public function set sendChunks(value : Boolean) : void {
             _sendChunks = value;
             if(_sendChunks)
-                updateHaveObjects();
+                initHaveObjects();
         }
 
         public function get trafficTracker() : P2PFileChannelTrafficTracker {
