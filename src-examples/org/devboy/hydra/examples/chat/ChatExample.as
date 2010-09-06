@@ -36,8 +36,10 @@ package org.devboy.hydra.examples.chat
 			var stratusServiceUrl : String = "rtmfp://stratus.rtmfp.net/YOUR-API_KEY";
 			_hydraService = new HydraService("HydraChatExample", stratusServiceUrl);
 			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_SUCCESS, serviceEvent);
+			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_FAILED, serviceEvent);
+			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_REJECTED, serviceEvent);
 			
-			_chatChannel = new HydraChatChannel(_hydraService, "HydraChatExample->ChatChannel");
+			_chatChannel = new HydraChatChannel(_hydraService, "HydraChatExample/ChatChannel");
 			_chatChannel.addEventListener(HydraUserEvent.USER_CONNECT, userEvent);
 			_chatChannel.addEventListener(HydraUserEvent.USER_DISCONNECT, userEvent);
 			_chatChannel.addEventListener(HydraChatEvent.MESSAGE_RECEIVED, messageEvent);
