@@ -126,7 +126,6 @@ package org.devboy.hydra
 			var info : Object = message.info;
 			var senderPeerId : String = message.senderPeerId;
 			var command : IHydraCommand = _hydraService.commandFactory.createCommand(type, timestamp, userId, senderPeerId, info);
-			trace(command);
 			if( command )
 				dispatchEvent( new HydraCommandEvent(HydraCommandEvent.COMMAND_RECEIVED, command));		
 		}
