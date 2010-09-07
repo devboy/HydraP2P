@@ -38,6 +38,71 @@ package org.devboy.hydra
 	import flash.net.NetGroup;
 
 	/**
+	 *  Dispatched when the <code>HydraChannel</code> connects 
+	 *  successfully to the service string. 
+	 * 
+	 *  This event is dispatched only when the 
+	 *  hydra service trys to connect to the service url.
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.CHANNEL_CONNECT_SUCCESS
+	 */
+	[Event(name="channelConnectSuccess", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraChannel</code> connection 
+	 *  has failed. 
+	 * 
+	 *  This event is dispatched only when the 
+	 *  hydra service trys to connect to the service url.
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.CHANNEL_CONNECT_FAILED
+	 */
+	[Event(name="channelConnectFailed", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraChannel</code> connection 
+	 *  is rejected. 
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.CHANNEL_CONNECT_REJECTED
+	 */
+	[Event(name="channelConnectRejected", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraChannel</code> sends a message. 
+	 *
+	 *  @eventType org.devboy.hydra.commands.HydraCommandEvent.COMMAND_SENT
+	 */
+	[Event(name="commandSent", type="org.devboy.hydra.commands.HydraCommandEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraChannel</code> sends a message. 
+	 *
+	 *  @eventType org.devboy.hydra.commands.HydraCommandEvent.COMMAND_RECEIVED
+	 */
+	[Event(name="commandReceived", type="org.devboy.hydra.commands.HydraCommandEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraChannel</code> sends a message. 
+	 *
+	 *  @eventType org.devboy.hydra.commands.HydraCommandEvent.COMMAND_RECEIVED
+	 */
+	[Event(name="commandReceived", type="org.devboy.hydra.commands.HydraCommandEvent")]
+	
+	/**
+	 *  Dispatched when a user joins the <code>HydraChannel</code>. 
+	 *
+	 *  @eventType org.devboy.hydra.users.HydraUserEvent.USER_CONNECT
+	 */
+	[Event(name="userConnect", type="org.devboy.hydra.users.HydraUserEvent")]
+	
+	/**
+	 *  Dispatched when a user leaves the <code>HydraChannel</code>. 
+	 *
+	 *  @eventType org.devboy.hydra.users.HydraUserEvent.USER_DISCONNECT
+	 */
+	[Event(name="userDisconnect", type="org.devboy.hydra.users.HydraUserEvent")]
+	
+	/**
 	 * @author Dominic Graefen - devboy.org
 	 */
 	public class HydraChannel extends EventDispatcher

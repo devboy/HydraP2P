@@ -33,7 +33,45 @@ package org.devboy.hydra
 	import flash.events.NetStatusEvent;
 	import flash.net.NetConnection;
 	import flash.events.EventDispatcher;
-
+	
+	/**
+	 *  Dispatched when the <code>HydraService</code> connects 
+	 *  successfully to the service string. 
+	 * 
+	 *  This event is dispatched only when the 
+	 *  hydra service trys to connect to the service url.
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.SERVICE_CONNECT_SUCCESS
+	 */
+	[Event(name="serviceConnectSuccess", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraService</code> connection 
+	 *  has failed. 
+	 * 
+	 *  This event is dispatched only when the 
+	 *  hydra service trys to connect to the service url.
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.SERVICE_CONNECT_FAILED
+	 */
+	[Event(name="serviceConnectFailed", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraService</code> connection 
+	 *  closes. 
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.SERVICE_CONNECT_CLOSED
+	 */
+	[Event(name="serviceConnectClosed", type="org.devboy.hydra.HydraEvent")]
+	
+	/**
+	 *  Dispatched when the <code>HydraService</code> connection 
+	 *  is rejected. 
+	 *
+	 *  @eventType org.devboy.hydra.HydraEvent.SERVICE_CONNECT_REJECTED
+	 */
+	[Event(name="serviceConnectRejected", type="org.devboy.hydra.HydraEvent")]
+	
 	/**
 	 * @author Dominic Graefen - devboy.org
 	 */
@@ -60,6 +98,7 @@ package org.devboy.hydra
 			if( !connected )
 			{
 				_user = new HydraUser(username, generateUserId(), null);
+				trace("Service: " + _stratusService);
 				_netConnection.connect(_stratusService);
 			}
 		}
