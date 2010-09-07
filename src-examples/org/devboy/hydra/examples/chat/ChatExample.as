@@ -33,7 +33,7 @@ package org.devboy.hydra.examples.chat
 
 		private function init() : void
 		{
-			var stratusServiceUrl : String = "rtmfp://stratus.rtmfp.net/YOUR-API_KEY";
+			var stratusServiceUrl : String = "rtmfp://stratus.rtmfp.net/YOUR-API-KEY";
 			_hydraService = new HydraService("HydraChatExample", stratusServiceUrl);
 			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_SUCCESS, serviceEvent);
 			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_FAILED, serviceEvent);
