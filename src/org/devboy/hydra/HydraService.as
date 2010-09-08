@@ -98,7 +98,6 @@ package org.devboy.hydra
 			if( !connected )
 			{
 				_user = new HydraUser(username, generateUserId(), null);
-				trace("Service: " + _rtmfpService);
 				_netConnection.connect(_rtmfpService);
 			}
 		}

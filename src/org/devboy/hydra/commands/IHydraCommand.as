@@ -31,7 +31,7 @@ package org.devboy.hydra.commands
 	{
 		function get userId() : String;		function set userId( id : String ) : void;
 		function get type() : String;
-		function get timestamp() : uint;		function set timestamp( time : uint ) : void;
+		function get timestamp() : Number;		function set timestamp( time : Number ) : void;
 		function get info() : Object;
 	}
 }

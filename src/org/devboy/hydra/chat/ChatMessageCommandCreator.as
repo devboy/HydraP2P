@@ -32,7 +32,7 @@ package org.devboy.hydra.chat
 	 */
 	public class ChatMessageCommandCreator implements IHydraCommandCreator
 	{
-		public function createCommand(type : String, timestamp : uint, userId : String, senderPeerId : String, info : Object) : IHydraCommand
+		public function createCommand(type : String, timestamp : Number, userId : String, senderPeerId : String, info : Object) : IHydraCommand
 		{
 			if( type != commandType )
 				throw new Error( "CommandTypes do not match!");

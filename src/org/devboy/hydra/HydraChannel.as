@@ -187,7 +187,7 @@ package org.devboy.hydra
 		{
 			var userId : String = message.userId;
 			var type : String = message.type;
-			var timestamp : uint = message.timestamp;
+			var timestamp : Number = message.timestamp;
 			var info : Object = message.info;
 			var senderPeerId : String = message.senderPeerId;
 			var command : IHydraCommand = _hydraService.commandFactory.createCommand(type, timestamp, userId, senderPeerId, info);
@@ -198,7 +198,7 @@ package org.devboy.hydra
 		public function sendCommand( command : IHydraCommand ) : void
 		{
 			command.userId = _hydraService.user.uniqueId;
-			command.timestamp = new Date().time;
+			command.timestamp = new Date().getTime();
 			var message : Object = new Object();
 			message.userId = command.userId;
 			message.type = command.type;

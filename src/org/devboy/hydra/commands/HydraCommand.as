@@ -32,7 +32,7 @@ package org.devboy.hydra.commands
 	{	
 		private var _userId : String;
 		private var _type : String;
-		private var _timestamp : uint;
+		private var _timestamp : Number;
 		private var _senderPeerId : String;
 		
 		public function HydraCommand( type : String ) 
@@ -50,7 +50,7 @@ package org.devboy.hydra.commands
 			return _type;
 		}
 
-		public function get timestamp() : uint
+		public function get timestamp() : Number
 		{
 			return _timestamp;
 		}
@@ -65,7 +65,7 @@ package org.devboy.hydra.commands
 			_userId = id;
 		}
 
-		public function set timestamp(time : uint) : void
+		public function set timestamp(time : Number) : void
 		{
 			_timestamp = time;
 		}

@@ -30,6 +30,6 @@ package org.devboy.hydra.commands
 	public interface IHydraCommandCreator
 	{
 		function get commandType() : String;
-		function createCommand( type : String, timestamp : uint, userId : String, senderPeerId : String, info : Object ) : IHydraCommand;
+		function createCommand( type : String, timestamp : Number, userId : String, senderPeerId : String, info : Object ) : IHydraCommand;
 	}
 }

@@ -29,7 +29,7 @@ package org.devboy.hydra.commands
 	 */
 	public class PingCommandCreator implements IHydraCommandCreator
 	{
-		public function createCommand(type : String, timestamp : uint, userId : String, senderPeerId:String, info : Object) : IHydraCommand
+		public function createCommand(type : String, timestamp : Number, userId : String, senderPeerId:String, info : Object) : IHydraCommand
 		{
 			if( type != commandType )
 				throw new Error( "CommandTypes do not match!");

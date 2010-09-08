@@ -70,7 +70,7 @@ package org.devboy.hydra.commands
 			}
 		}
 		
-		public function createCommand( type : String, timestamp : uint, userId : String, senderPeerId : String, info : Object ) : IHydraCommand
+		public function createCommand( type : String, timestamp : Number, userId : String, senderPeerId : String, info : Object ) : IHydraCommand
 		{
 			var creator : IHydraCommandCreator;
 			for each(creator in _creators)
