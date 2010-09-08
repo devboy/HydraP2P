@@ -77,7 +77,7 @@ package org.devboy.hydra
 	 */
 	public class HydraService extends EventDispatcher
 	{
-		private var _stratusService : String;
+		private var _rtmfpService : String;
 		private var _netConnection : NetConnection;
 		private var _commandFactory : HydraCommandFactory;
 		private var _user : HydraUser;
@@ -85,10 +85,10 @@ package org.devboy.hydra
 		private var _serviceId : String;
 		private var _serviceChannel : HydraChannel;
 		
-		public function HydraService(serviceId : String, stratusService : String)
+		public function HydraService(serviceId : String, rtmfpService : String)
 		{
 			_serviceId = serviceId;
-			_stratusService = stratusService;
+			_rtmfpService = rtmfpService;
 			super(this);
 			init();
 		}
@@ -98,8 +98,8 @@ package org.devboy.hydra
 			if( !connected )
 			{
 				_user = new HydraUser(username, generateUserId(), null);
-				trace("Service: " + _stratusService);
-				_netConnection.connect(_stratusService);
+				trace("Service: " + _rtmfpService);
+				_netConnection.connect(_rtmfpService);
 			}
 		}
 		
