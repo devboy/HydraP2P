@@ -31,6 +31,7 @@ import org.devboy.hydra.users.HydraUserEvent;
         private var _sender : NetStream;
         private var _sendStreamId : String;
         private var _receivingIds : Vector.<String>;
+        private var _groupSpecifier:GroupSpecifier;
 
 		public function VideoStreamExample()
 		{
@@ -41,7 +42,7 @@ import org.devboy.hydra.users.HydraUserEvent;
 
 		private function init() : void
 		{
-			var stratusServiceUrl : String = "rtmfp://stratus.rtmfp.net/YOUR_API_KEY";
+			var stratusServiceUrl : String = "rtmfp://stratus.rtmfp.net/API_KEY";
 			_hydraService = new HydraService("HydraVideoStreamExample", stratusServiceUrl);
 			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_SUCCESS, serviceEvent);
 			_hydraService.addEventListener(HydraEvent.SERVICE_CONNECT_FAILED, serviceEvent);
@@ -49,8 +50,10 @@ import org.devboy.hydra.users.HydraUserEvent;
             _hydraService.commandFactory.addCommandCreator( new PublishStreamCommandCreator() );
             _hydraService.connect("dom");
             var groupSpecifier : GroupSpecifier = new GroupSpecifier("StreamChannel");
-			groupSpecifier.postingEnabled = true;
-			groupSpecifier.serverChannelEnabled = true;
+                groupSpecifier.postingEnabled = true;
+                groupSpecifier.serverChannelEnabled = true;
+                groupSpecifier.multicastEnabled = true;
+			_groupSpecifier = groupSpecifier;
             _streamChannel = new HydraChannel(_hydraService,"StreamChannel",groupSpecifier,false);
             _streamChannel.addEventListener(HydraCommandEvent.COMMAND_RECEIVED,commandReceived);
             _streamChannel.addEventListener(HydraUserEvent.USER_CONNECT, userUpdate );
@@ -86,7 +89,7 @@ import org.devboy.hydra.users.HydraUserEvent;
         {
             if( containsReceiver(publishStreamCommand.streamId))
                 return;
-            var receiver : NetStream = new NetStream(_hydraService.netConnection,publishStreamCommand.senderPeerId);
+            var receiver : NetStream = new NetStream(_hydraService.netConnection,_groupSpecifier.groupspecWithAuthorizations());
                 receiver.play(publishStreamCommand.streamId);
             var video : Video = new Video(160,120);
                 video.x = width;
@@ -118,12 +121,11 @@ import org.devboy.hydra.users.HydraUserEvent;
             addChild(video);
             var mic : Microphone = Microphone.getMicrophone();
 
-            _sender = new NetStream(_hydraService.netConnection,NetStream.DIRECT_CONNECTIONS);
+            _sender = new NetStream(_hydraService.netConnection,_groupSpecifier.groupspecWithAuthorizations());
             _sender.addEventListener(NetStatusEvent.NET_STATUS,netStatus);
             _sender.publish(_sendStreamId = getTimer().toFixed() + (Math.random() * 1000).toFixed() );
             _sender.attachCamera(webcam);
-            _sender.attachAudio(mic);
-
+//            _sender.attachAudio(mic);
             _streamChannel.sendCommand( new PublishStreamCommand(_sendStreamId) );
         }
 
