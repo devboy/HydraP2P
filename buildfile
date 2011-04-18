@@ -2,7 +2,7 @@ require "buildr/as3"
 
 repositories.remote << "http://artifacts.devboy.org" << "http://repo2.maven.org/maven2"
 
-THIS_VERSION =  "0.1.0-SNAPSHOT"
+THIS_VERSION =  "0.1.0"
 
 desc "HydraP2P"
 define "HydraP2P" do
