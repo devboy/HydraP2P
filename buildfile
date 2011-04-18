@@ -2,10 +2,12 @@ require "buildr/as3"
 
 repositories.remote << "http://artifacts.devboy.org" << "http://repo2.maven.org/maven2"
 
+THIS_VERSION =  "0.1.0-SNAPSHOT"
+
 desc "HydraP2P"
 define "HydraP2P" do
   project.group = "org.devboy"
-  project.version = "0.1.0-SNAPSHOT"
+  project.version = THIS_VERSION
   compile.using :compc
   compile.options[:flexsdk] = FlexSDK.new("4.1.0.16076")
   compile.options[:other] = []
